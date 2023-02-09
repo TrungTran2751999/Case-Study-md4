@@ -12,6 +12,7 @@ function Detail(){
     const [products, setProducts] = useState();
     const [cart, setCart] = useState();
     const [quantity, setQuantity] = useState(1);
+    const [isAddCart, setIsAddCart] = useState(false);
     useEffect(()=>{
         let getProduct = async ()=>{
             let res = await axios.get(port+`product/${id}`);
@@ -30,6 +31,17 @@ function Detail(){
     }
     
     async function saveCart(){
+        let price = products.product.price;
+        let res = await axios.get(port+`product/${id}`);
+        if(quantity > res.data.product.quantity){
+            immediateToast("info",{
+                title: "Error",
+                theme:"light",
+                color: "red",
+                message: "Quantity is not enough"
+            })
+            return;
+        }
         await setCart({ 
             id:+id, 
             name: products.product.name,
@@ -41,6 +53,7 @@ function Detail(){
             color: "green",
             message: "Add cart successfully"
         })
+        let listCart = JSON.parse(localStorage.getItem("listCart"));
     }
     useEffect(()=>{
         let listCart = JSON.parse(localStorage.getItem("listCart"));
@@ -48,29 +61,33 @@ function Detail(){
             if(listCart.length==0){
                 listCart.push(cart);  
                 localStorage.setItem("listCart", JSON.stringify(listCart));
+                setIsAddCart(true);
                 return;
             }
             for(let i=0; i<listCart.length; i++){
                 if(cart.id===listCart[i].id){
                     listCart[i].quantity+=quantity;
                     localStorage.setItem("listCart", JSON.stringify(listCart));
-                    console.log("iiiii")
+                    setIsAddCart(true);
                     break;
                 }else if(i===listCart.length-1){
                     listCart.push(cart);  
                     localStorage.setItem("listCart", JSON.stringify(listCart));
-                    console.log("ooo")
+                    setIsAddCart(true);
                     break;
                 }
             }
         }
+        
         return ()=>{
             
         }
     },[cart])
     return (
         <>
-            <HeadNotSlide />
+            <HeadNotSlide 
+                isAddCart = {isAddCart}
+            />
             {/* Page Header Start */}
             <div class="container-fluid bg-secondary mb-5">
                 <div class="d-flex flex-column align-items-center justify-content-center" style={{minHeight: "300px"}}>
@@ -159,8 +176,9 @@ function Detail(){
                         <div class="tab-content">
                             <div class="tab-pane show active" id="tab-pane-1">
                                 <h4 class="mb-3">Product Description</h4>
-                                <p>Eos no lorem eirmod diam diam, eos elitr et gubergren diam sea. Consetetur vero aliquyam invidunt duo dolores et duo sit. Vero diam ea vero et dolore rebum, dolor rebum eirmod consetetur invidunt sed sed et, lorem duo et eos elitr, sadipscing kasd ipsum rebum diam. Dolore diam stet rebum sed tempor kasd eirmod. Takimata kasd ipsum accusam sadipscing, eos dolores sit no ut diam consetetur duo justo est, sit sanctus diam tempor aliquyam eirmod nonumy rebum dolor accusam, ipsum kasd eos consetetur at sit rebum, diam kasd invidunt tempor lorem, ipsum lorem elitr sanctus eirmod takimata dolor ea invidunt.</p>
-                                <p>Dolore magna est eirmod sanctus dolor, amet diam et eirmod et ipsum. Amet dolore tempor consetetur sed lorem dolor sit lorem tempor. Gubergren amet amet labore sadipscing clita clita diam clita. Sea amet et sed ipsum lorem elitr et, amet et labore voluptua sit rebum. Ea erat sed et diam takimata sed justo. Magna takimata justo et amet magna et.</p>
+                                <h5>Size: {products!=undefined && products.product.width} x {products!=undefined && products.product.length} x {products!=undefined && products.product.height} (mm)</h5>
+                                <h5>Description: {products!=undefined && products.product.description}</h5>
+                                <h5>Quantity: {products!=undefined && products.product.quantity}</h5>
                             </div>
                         </div>
                     </div>

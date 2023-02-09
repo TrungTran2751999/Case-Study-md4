@@ -83,7 +83,7 @@ function CategoryEdit(){
                                 </div>
                                 <div className="error-name error" style={{color:"red"}}></div>
                                 <button type="button" class="btn btn-primary" style={{float:"right"}} onClick={handleCreateCategory}>
-                                    <i className="fa-sharp fa-solid fa-circle-plus"></i> Create
+                                    <i className="fa-sharp fa-solid fa-circle-plus"></i> Edit
                                 </button>
                             </div>
                         </div>

@@ -1,18 +1,23 @@
 import Head from "../../layout/client/head";
 import Footer from "../../layout/client/footer";
 import { useEffect,useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import port from "../../util/util";
 import { NavLink } from "react-router-dom";
-function HeaderPage(){
-    const [products, setProducts] = useState([]);
+function Category(){
+    let {id} = useParams();
+    const [products, setProduct] = useState([]);
+    const [category, setCategory] = useState("");
     useEffect(()=>{
-        async function getAllProduct(){
-            let res = await axios.get(port+"product");
-            setProducts(res.data);
+        async function init(){
+            let res = await axios.get(port+`product/category/${id}`);
+            setProduct(res.data);
+            let categoryRes = await axios.get(port+`category/${id}`);
+            setCategory(categoryRes.data);
         }
-        getAllProduct();
-    },[]);
+        init();
+    },[products])
     return (
         <body>
         <>
@@ -54,7 +59,7 @@ function HeaderPage(){
     
         <div class="container-fluid pt-5">
         <div class="text-center mb-4">
-            <h2 class="section-title px-5"><span class="px-2">Trandy Products</span></h2>
+            <h2 class="section-title px-5"><span class="px-2">{category.name}</span></h2>
         </div>
         <div class="row px-xl-5 pb-3">
             {products && products.length>0 &&
@@ -68,16 +73,20 @@ function HeaderPage(){
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                 <h6 class="text-truncate mb-3">{item.product.name}</h6>
                                 <div class="d-flex justify-content-center">
-                                    <h6>${item.product.price}</h6>
+                                    <h6>{item.product.price}</h6>
                                 </div>
                             </div>
                             <div class="card-footer d-flex justify-content-between bg-light border">
                                 <NavLink to={`/detail/${item.product.id}`} className="btn btn-sm text-dark p-0"><i className="fas fa-eye text-primary mr-1"></i>View Detail</NavLink>
+                                <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                             </div>
                         </div>
                         </div>
                     )
                 })
+            }
+            {products == 0 &&
+                <h1>Coming Soon</h1>
             }
         </div>
         </div>
@@ -87,4 +96,4 @@ function HeaderPage(){
         </body>
     )
 }
-export default HeaderPage;
+export default Category

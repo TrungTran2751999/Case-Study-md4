@@ -1,14 +1,36 @@
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
-function HeadNotSlide(){
+import axios from "axios";
+import port from "../../util/util";
+function HeadNotSlide(props){
     const [countCart, setCountCart] = useState(0);
+    const [category, setCategory] = useState([]);
+    const {isPayment, isAddCart} = props;
     useEffect(()=>{
        let cart = JSON.parse(localStorage.getItem("listCart"));
        if(cart!=null){
             setCountCart(cart.length);
-       } 
+       }
+       async function getCategory(){
+        let res = await axios.get(port+"category");
+        setCategory(res.data);
+        }
+        getCategory(); 
     },[])
-
+    useEffect(()=>{
+        if(isPayment === true){
+            setCountCart(0);
+        }
+    },[isPayment])
+    useEffect(()=>{
+        if(isAddCart === true){
+            let list = JSON.parse(localStorage.getItem("listCart"));
+            console.log(list);
+            if(list!=null){
+                setCountCart(list.length);
+            }
+        }
+    },[isAddCart])
     return (
         <>
             {/* <!-- Topbar Start --> */}
@@ -39,7 +61,7 @@ function HeadNotSlide(){
                 <div class="row align-items-center py-3 px-xl-5">
                     <div class="col-lg-3 d-none d-lg-block">
                         <a href="" class="text-decoration-none">
-                            <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                            <NavLink to={"/"} style={{textDecoration:"none"}}><h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">F</span>Machine</h1></NavLink>
                         </a>
                     </div>
                     <div class="col-lg-6 col-6 text-left">
@@ -76,25 +98,13 @@ function HeadNotSlide(){
                             <i class="fa fa-angle-down text-dark"></i>
                         </a>
                         <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0 bg-light" id="navbar-vertical" style={{width: "calc(100% - 30px)", zIndex: "1"}}>
-                            <div class="navbar-nav w-100 overflow-hidden" style={{height: "410px"}}>
-                                <div class="nav-item dropdown">
-                                    <a href="#" class="nav-link" data-toggle="dropdown">Dresses <i class="fa fa-angle-down float-right mt-1"></i></a>
-                                    <div class="dropdown-menu position-absolute bg-secondary border-0 rounded-0 w-100 m-0">
-                                        <a href="" class="dropdown-item">Men's Dresses</a>
-                                        <a href="" class="dropdown-item">Women's Dresses</a>
-                                        <a href="" class="dropdown-item">Baby's Dresses</a>
-                                    </div>
-                                </div>
-                                <a href="" class="nav-item nav-link">Shirts</a>
-                                <a href="" class="nav-item nav-link">Jeans</a>
-                                <a href="" class="nav-item nav-link">Swimwear</a>
-                                <a href="" class="nav-item nav-link">Sleepwear</a>
-                                <a href="" class="nav-item nav-link">Sportswear</a>
-                                <a href="" class="nav-item nav-link">Jumpsuits</a>
-                                <a href="" class="nav-item nav-link">Blazers</a>
-                                <a href="" class="nav-item nav-link">Jackets</a>
-                                <a href="" class="nav-item nav-link">Shoes</a>
-                            </div>
+                        <div class="navbar-nav w-100 overflow-hidden" style={{height: "410px"}}>
+                            {category && category.length > 0 && category.map((item)=>{
+                                return(
+                                    <NavLink to={`/category/${item.id}`} className="nav-item nav-link">{item.name}</NavLink>
+                                )
+                            })}
+                        </div>
                         </nav>
                     </div>
                     <div class="col-lg-9">

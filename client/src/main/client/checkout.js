@@ -28,6 +28,7 @@ function CheckOut(){
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
     const [listCartBooking, setListCartBooking] = useState([]);
+    const [isPayment, setPayment] =useState(false);
     useEffect(()=>{
         setSubtotal(sum+10);
     },[sum]);
@@ -115,15 +116,17 @@ function CheckOut(){
             "ward": +ward
         }
         setData(data);
+        setPayment(true);
     }
 
     useEffect(()=>{
+        let listCart = JSON.parse(localStorage.getItem("listCart"));
         let errorKey = ["name", "email", "phone", "address", "province", "district", "ward"];
         async function payMent(){
             for(let i=0; i<errorKey.length; i++){
                 document.querySelector(".error-"+errorKey[i]).innerHTML = "";
             }
-            if(data != undefined){
+            if(data != undefined && listCart!=null && listCart.length > 0){
                 let res = await axios.post(port+"cart",data).then((res)=>{
                     immediateToast("info",{
                         title: "Success",
@@ -131,10 +134,10 @@ function CheckOut(){
                         theme: "light",
                         color:"green"
                     })
+                    localStorage.setItem("listCart", JSON.stringify([]));
                 }).catch((res)=>{
                     let errors = res.response.data;
                     for(let error in errors){
-                        console.log(error.split("."))
                         if(error.split(".").length == 2){
                             document.querySelector(".error-"+error.split(".")[1]).innerHTML = errors[error];
                         }else{
@@ -142,13 +145,23 @@ function CheckOut(){
                         }  
                     }
                 });
+            }else if(data != undefined && (listCart!=null || listCart.length < 0)){
+                immediateToast("info",{
+                    title: "Error",
+                    message: "Cart is not exist. Please check cart",
+                    theme: "light",
+                    color:"red"
+                })
             }
         }
         payMent();
+        
     },[data]);
     return (
         <>
-            <HeadNotSlide />
+            <HeadNotSlide 
+                isPayment = {isPayment}
+            />
             {/* <!-- Page Header Start --> */}
             <div class="container-fluid bg-secondary mb-5">
                 <div class="d-flex flex-column align-items-center justify-content-center" style={{minHeight: "300px"}}>
@@ -252,10 +265,6 @@ function CheckOut(){
                                     <h6 class="font-weight-medium">
                                         ${sum}
                                     </h6>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="font-weight-medium">Shipping</h6>
-                                    <h6 class="font-weight-medium">$10</h6>
                                 </div>
                             </div>
                             <div class="card-footer border-secondary bg-transparent">

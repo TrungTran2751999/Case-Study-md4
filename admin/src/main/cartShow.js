@@ -10,7 +10,6 @@ import "izitoast-react/dist/iziToast.css";
 import { useNavigate } from "react-router-dom";
 function CartShow(){
     let navigate = useNavigate();
-    
     const [cart, setCart] = useState([]);
     const [status, setStatus] = useState("1");
     useEffect(()=>{
@@ -58,7 +57,7 @@ function CartShow(){
                 });
             }
             getAllCart();
-            document.querySelector(".close").click();
+            document.getElementById(`close${id}`).click();
         }).catch((error)=>{
             immediateToast("info",{
                 title: "Error",
@@ -159,7 +158,7 @@ function CartShow(){
                                 <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <button type="button" class="close" id={`close${item.id}`} data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>

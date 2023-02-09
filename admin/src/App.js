@@ -16,10 +16,12 @@ import CartShow from './main/cartShow';
 import Customer from './main/customer';
 import CartDetailShow from './main/cartDetailShow';
 import Login from './main/login';
+
 function App() {
   return (
     <Router>
         <Routes>
+
             <Route path='/' element={<Dashboard />} exact/>
             <Route path='/product' element={<ProductShow/>} exact/>
             <Route path='/category' element={<CategoryShow />} exact/>

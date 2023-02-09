@@ -7,6 +7,7 @@ import { NavLink } from "react-router-dom";
 function Cart(){
     const [listCart, setListCart]= useState([]);
     const [sum, setSum] = useState(0);
+    const [isAddCart, setIsAddCart] = useState(false);
     useEffect(()=>{
         if(localStorage.getItem("listCart")!=null){
             let list = JSON.parse(localStorage.getItem("listCart"));
@@ -22,20 +23,21 @@ function Cart(){
     },[listCart])
     function handleDeleteCart(id){
         let list = [...listCart]
-        let close = document.querySelector(".close");
+        let close = document.getElementById(`close${id}`);
         for(let i=0; i<list.length; i++){
             if(id===list[i].id){
                 list.splice(i,1);
-                close.click();
                 break;
             }
         }
         setListCart(list);
+        close.click();
         localStorage.setItem("listCart", JSON.stringify(list));
+        setIsAddCart(true);
     }
     return (
         <>  
-            <HeadNotSlide />
+            <HeadNotSlide isAddCart={isAddCart} />
             {/* <!-- Cart Start --> */}
             <div class="container-fluid pt-5">
                 <div class="row px-xl-5">
@@ -83,15 +85,11 @@ function Cart(){
                                     <h6 class="font-weight-medium">Subtotal</h6>
                                     <h6 class="font-weight-medium">${sum}</h6>
                                 </div>
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="font-weight-medium">Shipping</h6>
-                                    <h6 class="font-weight-medium">$10</h6>
-                                </div>
                             </div>
                             <div class="card-footer border-secondary bg-transparent">
                                 <div class="d-flex justify-content-between mt-2">
                                     <h5 class="font-weight-bold">Total</h5>
-                                    <h5 class="font-weight-bold">${sum+10}</h5>
+                                    <h5 class="font-weight-bold">${sum}</h5>
                                 </div>
                                 <NavLink to="/check-out" className="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</NavLink>
                             </div>
@@ -107,7 +105,7 @@ function Cart(){
                         <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close" id={`close${item.id}`} data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                             </button>
                         </div>

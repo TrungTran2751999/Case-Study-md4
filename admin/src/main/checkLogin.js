@@ -8,12 +8,14 @@ function checkLogin(navigate, link){
                 let res = await axios.post(port+"auth/check",JSON.parse(admin)).then((res)=>{
                     return useNavigate(link);
                 }).catch(()=>{
-                    return useNavigate("/login")
+                    useNavigate("/login");
+                    return false;
                 })
             }
             check();
         }else{
-            return navigate("/login");
+            navigate("/login");
+            return true
         }
 }
 export default checkLogin;
